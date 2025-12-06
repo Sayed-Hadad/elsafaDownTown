@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}سجل الأنشطة{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3">
+            <i class="fas fa-history"></i> سجل الأنشطة
+        </h1>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-6">
+                <select name="user_id" class="form-control">
+                    <option value="">-- جميع الموظفين --</option>
+                    {% for u in users %}
+                    <option value="{{ u.id }}" {% if user_id == u.id %}selected{% endif %}>{{ u.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Activity Logs -->
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+            <i class="fas fa-list"></i> سجل الأنشطة الكامل
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>الموظف</th>
+                        <th>الإجراء</th>
+                        <th>التفاصيل</th>
+                        <th>التاريخ والوقت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs.items %}
+                    <tr>
+                        <td><strong>{{ log.user.username }}</strong></td>
+                        <td>
+                            {% if log.action == 'login' %}
+                            <span class="badge bg-info">تسجيل دخول</span>
+                            {% elif log.action == 'logout' %}
+                            <span class="badge bg-secondary">تسجيل خروج</span>
+                            {% elif log.action == 'create_booking' %}
+                            <span class="badge bg-success">إنشاء حجز</span>
+                            {% elif log.action == 'edit_booking' %}
+                            <span class="badge bg-warning">تعديل حجز</span>
+                            {% elif log.action == 'delete_booking' %}
+                            <span class="badge bg-danger">حذف حجز</span>
+                            {% elif log.action == 'approve_booking' %}
+                            <span class="badge bg-success">تصريح حجز</span>
+                            {% elif log.action == 'reject_booking' %}
+                            <span class="badge bg-danger">رفض حجز</span>
+                            {% elif log.action == 'add_hall' %}
+                            <span class="badge bg-primary">إضافة قاعة</span>
+                            {% elif log.action == 'edit_hall' %}
+                            <span class="badge bg-warning">تعديل قاعة</span>
+                            {% elif log.action == 'delete_hall' %}
+                            <span class="badge bg-danger">حذف قاعة</span>
+                            {% elif log.action == 'add_staff' %}
+                            <span class="badge bg-primary">إضافة موظف</span>
+                            {% elif log.action == 'edit_staff' %}
+                            <span class="badge bg-warning">تعديل موظف</span>
+                            {% elif log.action == 'delete_staff' %}
+                            <span class="badge bg-danger">حذف موظف</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ log.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ log.details or '--' }}</small></td>
+                        <td>
+                            <small class="text-muted">{{ log.timestamp.strftime('%d/%m/%Y %H:%M:%S') }}</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if logs.pages > 1 %}
+<nav class="mt-4" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if logs.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.activity_logs', page=1, user_id=user_id) }}">الأولى</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.activity_logs', page=logs.prev_num, user_id=user_id) }}">السابقة</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in logs.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == logs.page %}
+                <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('admin.activity_logs', page=page_num, user_id=user_id) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if logs.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.activity_logs', page=logs.next_num, user_id=user_id) }}">التالية</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.activity_logs', page=logs.pages, user_id=user_id) }}">الأخيرة</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

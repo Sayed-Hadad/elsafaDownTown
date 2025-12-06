@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+
+{% block title %}الحجوزات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+        margin-bottom: 1rem;
+    }
+    .booking-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    .booking-card.pending { border-left-color: var(--warning); }
+    .booking-card.approved { border-left-color: var(--success); }
+    .booking-card.completed { border-left-color: var(--info); }
+    .booking-card.cancelled { border-left-color: var(--danger); opacity: 0.7; }
+    
+    .view-toggle {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .view-toggle .btn {
+        padding: 0.5rem 1rem;
+    }
+    
+    .booking-date-badge {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+        color: #000;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-align: center;
+        min-width: 120px;
+    }
+    
+    .addon-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.875rem;
+    }
+    
+    .booking-info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .booking-info-item i {
+        color: var(--gold);
+        width: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="fas fa-calendar-check text-primary"></i> الحجوزات
+                </h1>
+                <p class="text-muted mb-0">عرض وإدارة جميع حجوزاتك</p>
+            </div>
+            <a href="{{ url_for('bookings.add_booking') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> حجز جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-header bg-primary">
+        <h5 class="mb-0"><i class="fas fa-filter"></i> البحث والتصفية</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-search"></i> البحث</label>
+                <input type="text" name="search" class="form-control" placeholder="اسم العميل أو رقم الموبايل..." value="{{ search }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-building"></i> القاعة</label>
+                <select name="hall_id" class="form-control">
+                    <option value="">-- جميع القاعات --</option>
+                    {% for hall in halls %}
+                    <option value="{{ hall.id }}" {% if hall_id == hall.id %}selected{% endif %}>{{ hall.hall_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-info-circle"></i> الحالة</label>
+                <select name="status" class="form-control">
+                    <option value="">-- جميع الحالات --</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>قيد الانتظار</option>
+                    <option value="approved" {% if status == 'approved' %}selected{% endif %}>موافق عليه</option>
+                    <option value="completed" {% if status == 'completed' %}selected{% endif %}>مكتمل</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>ملغى</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Toggle and Actions -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="view-toggle">
+        <span class="text-muted me-2">عرض:</span>
+        <button class="btn btn-sm btn-outline-primary active" onclick="switchView('cards')" id="viewCardsBtn">
+            <i class="fas fa-th-large"></i> بطاقات
+        </button>
+        <button class="btn btn-sm btn-outline-primary" onclick="switchView('table')" id="viewTableBtn">
+            <i class="fas fa-table"></i> جدول
+        </button>
+    </div>
+    {% if current_user.is_admin() %}
+    <div>
+        <a href="{{ url_for('bookings.export_csv') }}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-download"></i> CSV
+        </a>
+        <a href="{{ url_for('bookings.export_excel') }}" class="btn btn-sm btn-secondary">
+            <i class="fas fa-file-excel"></i> Excel
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Cards View -->
+<div id="cardsView">
+    {% if bookings and bookings.items %}
+    <div class="row">
+        {% for booking in bookings.items %}
+        <div class="col-lg-6 col-xl-4 mb-3">
+            <div class="card booking-card {{ booking.status }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">
+                                <i class="fas fa-user text-primary"></i> {{ booking.customer_name }}
+                            </h5>
+                            <div class="booking-info-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ booking.phone }}</span>
+                                {% if booking.phone_alt %}
+                                <span class="text-muted">/ {{ booking.phone_alt }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="booking-date-badge">
+                            <div style="font-size: 0.75rem; opacity: 0.8;">{{ booking.date.strftime('%d/%m/%Y') }}</div>
+                            <div style="font-size: 0.875rem;">{{ booking.start_time }} - {{ booking.end_time }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-info-item">
+                        <i class="fas fa-building"></i>
+                        <span>
+                            {% if booking.hall %}
+                                {{ booking.hall.hall_name }}
+                            {% else %}
+                                <span class="text-muted">قاعة محذوفة</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="booking-info-item mb-0">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <strong class="text-success">{{ booking.total_price }} ج.م</strong>
+                            {% if booking.deposit %}
+                            <span class="text-muted small">(عربون: {{ booking.deposit }} ج.م)</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if booking.status == 'pending' %}
+                            <span class="badge bg-warning"><i class="fas fa-clock"></i> قيد الانتظار</span>
+                            {% elif booking.status == 'approved' %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> موافق عليه</span>
+                            {% elif booking.status == 'completed' %}
+                            <span class="badge bg-info"><i class="fas fa-check-double"></i> مكتمل</span>
+                            {% else %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle"></i> ملغى</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if booking.addons and booking.addons|length > 0 %}
+                    <div class="mb-2">
+                        <small class="text-muted d-block mb-1"><i class="fas fa-plus-circle"></i> الإضافات:</small>
+                        <div class="d-flex flex-wrap">
+                            {% for addon in booking.addons %}
+                            <span class="addon-badge">
+                                {% if addon.icon %}<i class="{{ addon.icon }}"></i>{% endif %}
+                                <span>{{ addon.name }}</span>
+                                <strong class="text-success">{{ addon.price }} ج.م</strong>
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.notes %}
+                    <div class="mb-2">
+                        <small class="text-muted"><i class="fas fa-sticky-note"></i> ملاحظات:</small>
+                        <p class="mb-0 small text-muted">{{ booking.notes[:100] }}{% if booking.notes|length > 100 %}...{% endif %}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                        <a href="{{ url_for('bookings.edit_booking', booking_id=booking.id) }}" class="btn btn-sm btn-primary flex-grow-1">
+                            <i class="fas fa-edit"></i> تعديل
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ booking.id }}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal{{ booking.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle text-warning"></i> تأكيد الحذف
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>هل تريد حقاً حذف حجز <strong>"{{ booking.customer_name }}"</strong>؟</p>
+                        <div class="alert alert-warning mb-0">
+                            <i class="fas fa-info-circle"></i> لا يمكن التراجع عن هذه العملية.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                        <form method="POST" action="{{ url_for('bookings.delete_booking', booking_id=booking.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-inbox" style="font-size: 4rem; color: var(--text-muted); opacity: 0.3;"></i>
+            <p class="text-muted mt-3 mb-0">لا توجد حجوزات</p>
+            <a href="{{ url_for('bookings.add_booking') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus-circle"></i> إضافة حجز جديد
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Table View -->
+<div id="tableView" style="display: none;">
+    <div class="card">
+        <div class="card-header bg-primary">
+            <h5 class="mb-0">
+                <i class="fas fa-table"></i> عرض جدولي
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>العميل</th>
+                            <th>رقم الموبايل</th>
+                            <th>القاعة</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                            <th>السعر</th>
+                            <th>الإضافات</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if bookings and bookings.items %}
+                            {% for booking in bookings.items %}
+                            <tr>
+                                <td><strong>{{ booking.customer_name }}</strong></td>
+                                <td>
+                                    <small>{{ booking.phone }}</small>
+                                    {% if booking.phone_alt %}
+                                    <br><small class="text-muted">{{ booking.phone_alt }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.hall %}
+                                        {{ booking.hall.hall_name }}
+                                    {% else %}
+                                        <span class="text-muted">قاعة محذوفة</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ booking.date.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ booking.start_time }} - {{ booking.end_time }}</td>
+                                <td>
+                                    <strong class="text-success">{{ booking.total_price }} ج.م</strong>
+                                    {% if booking.deposit %}
+                                    <br><small class="badge bg-info">عربون: {{ booking.deposit }} ج.م</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.addons and booking.addons|length > 0 %}
+                                        {% for addon in booking.addons %}
+                                            <span class="addon-badge">
+                                                {% if addon.icon %}<i class="{{ addon.icon }}"></i>{% endif %}
+                                                {{ addon.name }} - {{ addon.price }} ج.م
+                                            </span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted small">لا إضافات</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                    <span class="badge bg-warning"><i class="fas fa-clock"></i> قيد الانتظار</span>
+                                    {% elif booking.status == 'approved' %}
+                                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> موافق عليه</span>
+                                    {% elif booking.status == 'completed' %}
+                                    <span class="badge bg-info"><i class="fas fa-check-double"></i> مكتمل</span>
+                                    {% else %}
+                                    <span class="badge bg-danger"><i class="fas fa-times-circle"></i> ملغى</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('bookings.edit_booking', booking_id=booking.id) }}" class="btn btn-sm btn-outline-primary" title="تعديل">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ booking.id }}" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-inbox"></i> لا توجد حجوزات
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if bookings.pages > 1 %}
+<nav class="mt-4" aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if bookings.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('bookings.list_bookings', page=1, search=search, hall_id=hall_id, status=status) }}">الأولى</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('bookings.list_bookings', page=bookings.prev_num, search=search, hall_id=hall_id, status=status) }}">السابقة</a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in bookings.iter_pages() %}
+            {% if page_num %}
+                {% if page_num == bookings.page %}
+                <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('bookings.list_bookings', page=page_num, search=search, hall_id=hall_id, status=status) }}">{{ page_num }}</a></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if bookings.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('bookings.list_bookings', page=bookings.next_num, search=search, hall_id=hall_id, status=status) }}">التالية</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('bookings.list_bookings', page=bookings.pages, search=search, hall_id=hall_id, status=status) }}">الأخيرة</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // حفظ تفضيل العرض في localStorage
+    const savedView = localStorage.getItem('bookingsView') || 'cards';
+    
+    function switchView(view) {
+        const cardsView = document.getElementById('cardsView');
+        const tableView = document.getElementById('tableView');
+        const cardsBtn = document.getElementById('viewCardsBtn');
+        const tableBtn = document.getElementById('viewTableBtn');
+        
+        if (view === 'cards') {
+            cardsView.style.display = 'block';
+            tableView.style.display = 'none';
+            cardsBtn.classList.add('active');
+            tableBtn.classList.remove('active');
+            localStorage.setItem('bookingsView', 'cards');
+        } else {
+            cardsView.style.display = 'none';
+            tableView.style.display = 'block';
+            cardsBtn.classList.remove('active');
+            tableBtn.classList.add('active');
+            localStorage.setItem('bookingsView', 'table');
+        }
+    }
+    
+    // تطبيق العرض المحفوظ عند تحميل الصفحة
+    if (savedView === 'table') {
+        switchView('table');
+    }
+</script>
+{% endblock %}

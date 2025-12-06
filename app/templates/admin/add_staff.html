@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة موظف{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-user-plus"></i> إضافة موظف جديد
+        </h1>
+        
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus"></i> بيانات الموظف الجديد
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user"></i> اسم المستخدم *
+                        </label>
+                        <input type="text" class="form-control" id="username" name="username" required placeholder="أدخل اسم المستخدم">
+                        <small class="text-muted">يجب أن يكون اسم المستخدم فريداً</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> كلمة المرور *
+                        </label>
+                        <input type="password" class="form-control" id="password" name="password" required placeholder="أدخل كلمة المرور">
+                        <small class="text-muted">يجب أن تكون كلمة المرور قوية (8 أحرف على الأقل)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="role" class="form-label">
+                            <i class="fas fa-user-tag"></i> الدور *
+                        </label>
+                        <select class="form-control" id="role" name="role" required>
+                            <option value="staff">موظف</option>
+                            <option value="admin">مدير</option>
+                        </select>
+                        <small class="text-muted">المدير لديه صلاحيات كاملة، الموظف يمكنه إضافة الحجوزات فقط</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save"></i> إضافة
+                        </button>
+                        <a href="{{ url_for('admin.manage_staff') }}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-arrow-left"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

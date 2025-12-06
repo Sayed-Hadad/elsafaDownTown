@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل الموظف{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-edit"></i> تعديل الموظف
+        </h1>
+        
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-edit"></i> تعديل بيانات الموظف
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">اسم المستخدم</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
+                        </div>
+                        <small class="text-muted">لا يمكن تغيير اسم المستخدم</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> كلمة المرور الجديدة
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="اترك فارغاً للاحتفاظ بالقديمة">
+                        </div>
+                        <small class="text-muted">اتركه فارغاً للاحتفاظ بكلمة المرور الحالية</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="role" class="form-label">
+                            <i class="fas fa-user-tag"></i> الدور *
+                        </label>
+                        <select class="form-control" id="role" name="role" required>
+                            <option value="staff" {% if user.role == 'staff' %}selected{% endif %}>
+                                <i class="fas fa-user"></i> موظف
+                            </option>
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>
+                                <i class="fas fa-crown"></i> مدير
+                            </option>
+                        </select>
+                        <small class="text-muted">المدير لديه صلاحيات كاملة، الموظف يمكنه إضافة الحجوزات فقط</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save"></i> حفظ التغييرات
+                        </button>
+                        <a href="{{ url_for('admin.manage_staff') }}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-arrow-left"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

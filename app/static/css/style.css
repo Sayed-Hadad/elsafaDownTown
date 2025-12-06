@@ -1,0 +1,1280 @@
+/* ============================================
+   Safa Downtown Halls - نظام ألوان متناسق
+   ============================================ */
+
+/* ===== متغيرات الألوان الأساسية ===== */
+:root {
+    /* الألوان الأساسية */
+    --gold: #d4af37;
+    --gold-light: #e5c866;
+    --gold-dark: #b8860b;
+    --gold-hover: #c99d2f;
+    
+    /* الخلفيات */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #0f0f0f;
+    --bg-panel: #141414;
+    --bg-card: #1a1a1a;
+    --bg-hover: #1f1f1f;
+    
+    /* النصوص */
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    --text-disabled: #707070;
+    
+    /* الألوان الوظيفية */
+    --success: #28a745;
+    --success-light: #4caf50;
+    --success-dark: #1e7e34;
+    --danger: #dc3545;
+    --danger-light: #f44336;
+    --danger-dark: #c82333;
+    --warning: #ffc107;
+    --warning-light: #ffd54f;
+    --warning-dark: #e0a800;
+    --info: #17a2b8;
+    --info-light: #0dcaf0;
+    --info-dark: #138496;
+    
+    /* الحدود والظلال */
+    --border-color: rgba(212, 175, 55, 0.15);
+    --border-hover: rgba(212, 175, 55, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-gold: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+/* ===== إعدادات عامة ===== */
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    padding: 1.5rem 0;
+}
+
+/* ===== شريط التنقل ===== */
+.navbar.bg-primary {
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-secondary) 100%) !important;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+    color: var(--gold) !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.navbar-brand:hover {
+    color: var(--gold-light) !important;
+}
+
+.navbar .nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+    color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.navbar .dropdown-menu {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+}
+
+.navbar .dropdown-item {
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.navbar .dropdown-item:hover {
+    color: var(--gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.navbar-toggler {
+    border-color: var(--border-color);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(212, 175, 55, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* ===== البطاقات ===== */
+.card {
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+}
+
+.card-header {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+}
+
+.card-header.bg-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%) !important;
+    color: #000 !important;
+    border-bottom: none;
+}
+
+.card-header.bg-warning {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%) !important;
+    color: #000 !important;
+    border-bottom: none;
+}
+
+.card-header.bg-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%) !important;
+    color: #fff !important;
+    border-bottom: none;
+}
+
+.card-header.bg-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%) !important;
+    color: #fff !important;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* ===== الأزرار ===== */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.625rem 1.25rem;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #000;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-hover) 0%, var(--gold-dark) 100%);
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-gold);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
+    color: var(--gold);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    color: #fff;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--success-light) 0%, var(--success) 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger) 0%, var(--danger-dark) 100%);
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, var(--danger-light) 0%, var(--danger) 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+    color: #000;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, var(--warning-light) 0%, var(--warning) 100%);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+}
+
+.btn-light {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.btn-light:hover {
+    background: var(--bg-hover) !important;
+    border-color: var(--border-hover) !important;
+    color: var(--gold) !important;
+}
+
+.btn-lg {
+    padding: 0.875rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
+
+/* ===== النماذج ===== */
+.form-control,
+.form-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: var(--bg-hover);
+    border-color: var(--gold);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.15);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--gold);
+    border-color: var(--gold);
+}
+
+.form-check-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.15);
+}
+
+/* ===== الجداول ===== */
+.table {
+    color: var(--text-secondary);
+    margin-bottom: 0;
+    background-color: transparent !important;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%) !important;
+    color: var(--gold) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    padding: 1rem;
+    text-align: right;
+}
+
+.table-light {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%) !important;
+    color: var(--gold) !important;
+}
+
+.table-light th {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%) !important;
+    color: var(--gold) !important;
+    border-color: var(--border-color) !important;
+}
+
+.table tbody {
+    background-color: transparent !important;
+}
+
+.table tbody td {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    vertical-align: middle;
+    color: var(--text-secondary) !important;
+}
+
+.table tbody tr {
+    background-color: transparent !important;
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.05) !important;
+    transform: scale(1.01);
+}
+
+.table tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(212, 175, 55, 0.02) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) td {
+    background-color: transparent !important;
+}
+
+/* إصلاح خلفيات الجداول داخل البطاقات */
+.card .table,
+.card-body .table {
+    background-color: transparent !important;
+}
+
+.card .table tbody tr,
+.card-body .table tbody tr {
+    background-color: transparent !important;
+}
+
+.card .table tbody td,
+.card-body .table tbody td {
+    background-color: transparent !important;
+}
+
+/* ===== التنبيهات ===== */
+.alert {
+    border: none;
+    border-radius: 10px;
+    border-right: 4px solid;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    border-right-color: var(--success);
+    color: var(--text-primary);
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border-right-color: var(--danger);
+    color: var(--text-primary);
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border-right-color: var(--warning);
+    color: var(--text-primary);
+}
+
+.alert-info {
+    background: rgba(23, 162, 184, 0.1);
+    border-right-color: var(--info);
+    color: var(--text-primary);
+}
+
+/* ===== الشارات ===== */
+.badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.bg-primary {
+    background: var(--gold) !important;
+    color: #000 !important;
+}
+
+.bg-success {
+    background: var(--success) !important;
+    color: #fff !important;
+}
+
+.bg-danger {
+    background: var(--danger) !important;
+    color: #fff !important;
+}
+
+.bg-warning {
+    background: var(--warning) !important;
+    color: #000 !important;
+}
+
+.bg-info {
+    background: var(--info) !important;
+    color: #fff !important;
+}
+
+.bg-light {
+    background: var(--bg-card) !important;
+    color: var(--text-secondary) !important;
+}
+
+.bg-light.text-dark {
+    background: rgba(212, 175, 55, 0.15) !important;
+    color: var(--gold) !important;
+}
+
+/* ===== التقويم ===== */
+.hall-calendar {
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-secondary) 100%);
+    border-radius: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) var(--bg-card);
+}
+
+/* تحسين شريط التمرير للتقويم */
+.hall-calendar::-webkit-scrollbar {
+    height: 8px;
+}
+
+.hall-calendar::-webkit-scrollbar-track {
+    background: var(--bg-card);
+    border-radius: 10px;
+}
+
+.hall-calendar::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+.hall-calendar::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-light);
+}
+
+.hall-calendar .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+    border-radius: 12px;
+    border-bottom: 3px solid var(--gold);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.hall-calendar .calendar-header h4 {
+    flex: 1;
+    text-align: center;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 0;
+    font-size: 1.3rem;
+    min-width: 200px;
+    text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+    letter-spacing: 0.5px;
+}
+
+.hall-calendar .calendar-header .btn {
+    min-width: 50px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.hall-calendar .calendar-header .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.hall-calendar table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0.75rem;
+    min-width: 100%;
+}
+
+.hall-calendar thead th {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #000;
+    font-weight: 800;
+    padding: 1rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hall-calendar tbody td {
+    height: 90px;
+    border: 3px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: var(--bg-card);
+    min-width: 60px;
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+.hall-calendar tbody td.available {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.35) 0%, rgba(40, 167, 69, 0.25) 100%) !important;
+    border-color: rgba(76, 175, 80, 0.8) !important;
+    border-width: 3px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.hall-calendar tbody td.available:hover {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.5) 0%, rgba(40, 167, 69, 0.35) 100%) !important;
+    border-color: #4caf50 !important;
+    border-width: 4px;
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+    z-index: 10;
+}
+
+/* تحسين اللمس على الموبايل */
+@media (hover: none) and (pointer: coarse) {
+    .hall-calendar tbody td.available:active {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.6) 0%, rgba(40, 167, 69, 0.4) 100%) !important;
+        transform: scale(1.05);
+    }
+    
+    .hall-calendar tbody td {
+        -webkit-tap-highlight-color: rgba(212, 175, 55, 0.3);
+        tap-highlight-color: rgba(212, 175, 55, 0.3);
+    }
+}
+
+.hall-calendar tbody td.booked {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.4) 0%, rgba(220, 53, 69, 0.3) 100%) !important;
+    border-color: rgba(244, 67, 54, 0.9) !important;
+    border-width: 3px;
+    cursor: not-allowed;
+    opacity: 0.95;
+    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.hall-calendar tbody td.booked:hover {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.5) 0%, rgba(220, 53, 69, 0.4) 100%) !important;
+    border-color: #f44336 !important;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+.hall-calendar tbody td.bg-light {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.hall-calendar .day-number {
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    display: block;
+    line-height: 1.2;
+    position: absolute;
+    top: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.hall-calendar td.available .day-number {
+    color: #ffffff !important;
+    font-weight: 900;
+    text-shadow: 0 2px 6px rgba(76, 175, 80, 0.8), 0 0 10px rgba(76, 175, 80, 0.4);
+    font-size: 1.5rem;
+}
+
+.hall-calendar td.booked .day-number {
+    color: #ffffff !important;
+    font-weight: 900;
+    text-shadow: 0 2px 6px rgba(244, 67, 54, 0.8), 0 0 10px rgba(244, 67, 54, 0.4);
+    font-size: 1.5rem;
+}
+
+.hall-calendar td.partially-booked .day-number {
+    color: #000000 !important;
+    font-weight: 900;
+    text-shadow: 0 2px 4px rgba(255, 193, 7, 0.6);
+    font-size: 1.5rem;
+}
+
+.hall-calendar .booked-label {
+    font-size: 0.85rem;
+    color: #fff !important;
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 800;
+    position: absolute;
+    bottom: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(244, 67, 54, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hall-calendar .available-label {
+    font-size: 0.85rem;
+    color: #fff !important;
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 800;
+    position: absolute;
+    bottom: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(76, 175, 80, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hall-calendar .partially-booked-label {
+    font-size: 0.85rem;
+    color: #000 !important;
+    background: linear-gradient(135deg, #ffc107 0%, #ffa000 100%);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 800;
+    position: absolute;
+    bottom: 0.6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(255, 193, 7, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.hall-calendar tbody td.partially-booked {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.4) 0%, rgba(255, 193, 7, 0.3) 100%) !important;
+    border-color: rgba(255, 193, 7, 0.9) !important;
+    border-width: 3px;
+    box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.hall-calendar tbody td.partially-booked:hover {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.5) 0%, rgba(255, 193, 7, 0.4) 100%) !important;
+    border-color: #ffc107 !important;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+}
+
+.hall-calendar tbody td.today {
+    border: 4px solid var(--gold) !important;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.2) !important;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(212, 175, 55, 0.15) 100%) !important;
+    animation: pulseToday 2s ease-in-out infinite;
+}
+
+@keyframes pulseToday {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(212, 175, 55, 1), inset 0 0 25px rgba(212, 175, 55, 0.3);
+    }
+}
+
+.hall-calendar tbody td.today .day-number {
+    color: var(--gold) !important;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 0 2px 6px rgba(0, 0, 0, 0.5);
+    font-size: 1.6rem;
+    top: 0.4rem;
+}
+
+.hall-calendar tbody td.today.available {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.4) 0%, rgba(212, 175, 55, 0.2) 100%) !important;
+}
+
+.hall-calendar tbody td.today.booked {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.45) 0%, rgba(212, 175, 55, 0.2) 100%) !important;
+}
+
+.hall-calendar tbody td.past {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(0.7);
+    background: linear-gradient(135deg, rgba(112, 112, 112, 0.2) 0%, rgba(112, 112, 112, 0.1) 100%) !important;
+    border-color: rgba(112, 112, 112, 0.4) !important;
+}
+
+.hall-calendar tbody td.past .day-number {
+    color: #888 !important;
+    text-shadow: none;
+}
+
+.hall-calendar tbody td.past .available-label,
+.hall-calendar tbody td.past .booked-label,
+.hall-calendar tbody td.past .partially-booked-label {
+    opacity: 0.5;
+}
+
+/* ===== النوافذ المنبثقة ===== */
+.modal-content {
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+    color: var(--text-primary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem;
+}
+
+.modal-header .modal-title {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* ===== التذييل ===== */
+footer {
+    background: var(--bg-secondary);
+    border-top: 2px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 1.5rem 0;
+    margin-top: auto;
+    text-align: center;
+}
+
+/* ===== ألوان الحالة ===== */
+.status-pending {
+    color: var(--warning);
+}
+
+.status-approved {
+    color: var(--success);
+}
+
+.status-completed {
+    color: var(--info);
+}
+
+.status-cancelled {
+    color: var(--danger);
+}
+
+/* ===== بطاقات لوحة التحكم ===== */
+.dashboard-card {
+    background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-card) 100%);
+    color: var(--text-primary);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-hover);
+}
+
+.dashboard-card h2 {
+    font-size: 2.5rem;
+    margin: 0.5rem 0;
+    font-weight: 700;
+}
+
+.dashboard-card p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.text-primary {
+    color: var(--gold) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+.text-info {
+    color: var(--info) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ===== أدوات مساعدة ===== */
+.shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.shadow-md {
+    box-shadow: var(--shadow-md) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.border-gold {
+    border-color: var(--gold) !important;
+}
+
+/* ===== الرسوم المتحركة ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== التصميم المتجاوب ===== */
+@media (max-width: 768px) {
+    .hall-calendar {
+        padding: 0.75rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    
+    /* تحسين التمرير على الموبايل */
+    .hall-calendar::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .hall-calendar table {
+        min-width: 600px; /* ضمان عرض كامل للتقويم */
+    }
+    
+    /* تحسين table-responsive للتقويم */
+    .hall-calendar .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.75rem;
+        padding: 0 0.75rem;
+    }
+    
+    /* تحسين بطاقات التقويم في صفحة admin/calendar */
+    .card.hall-calendar {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card.hall-calendar .card-body {
+        padding: 0.5rem;
+    }
+    
+    .card.hall-calendar .card-header {
+        padding: 0.75rem;
+    }
+    
+    .card.hall-calendar .card-header h5 {
+        font-size: 0.95rem;
+    }
+    
+    
+    .hall-calendar .calendar-header {
+        margin-bottom: 1rem;
+        padding: 1rem 0.75rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .hall-calendar .calendar-header h4 {
+        font-size: 1rem;
+        min-width: auto;
+        width: 100%;
+        order: 1;
+        margin: 0;
+        text-align: center;
+    }
+    
+    .hall-calendar .calendar-header .btn {
+        min-width: 45px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        flex: 0 0 auto;
+        order: 2;
+    }
+    
+    .hall-calendar table {
+        border-spacing: 0.3rem;
+        font-size: 0.8rem;
+        min-width: 600px; /* ضمان عرض كامل للتقويم */
+    }
+    
+    .hall-calendar thead th {
+        padding: 0.6rem 0.3rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    
+    .hall-calendar tbody td {
+        height: 65px;
+        min-width: 45px;
+        padding: 0.3rem;
+        border-width: 2px;
+    }
+    
+    .hall-calendar .day-number {
+        font-size: 1rem;
+        top: 0.4rem;
+        font-weight: 800;
+    }
+    
+    .hall-calendar td.available .day-number,
+    .hall-calendar td.booked .day-number,
+    .hall-calendar td.partially-booked .day-number {
+        font-size: 1.1rem;
+    }
+    
+    .hall-calendar .booked-label,
+    .hall-calendar .available-label,
+    .hall-calendar .partially-booked-label {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        bottom: 0.4rem;
+        white-space: nowrap;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .dashboard-card h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hall-calendar {
+        padding: 0.5rem;
+        border-radius: 8px;
+        margin: 0 -0.5rem;
+    }
+    
+    /* تحسين table-responsive للتقويم على الشاشات الصغيرة */
+    .hall-calendar .table-responsive {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    /* تحسين بطاقات التقويم في صفحة admin/calendar على الشاشات الصغيرة */
+    .card.hall-calendar {
+        margin-bottom: 1rem;
+    }
+    
+    .card.hall-calendar .card-header {
+        padding: 0.5rem;
+    }
+    
+    .card.hall-calendar .card-header h5 {
+        font-size: 0.85rem;
+    }
+    
+    .card.hall-calendar .card-body {
+        padding: 0.25rem;
+    }
+    
+    
+    .hall-calendar .calendar-header {
+        padding: 0.75rem 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .hall-calendar .calendar-header h4 {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+    }
+    
+    .hall-calendar .calendar-header .btn {
+        min-width: 40px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .hall-calendar table {
+        border-spacing: 0.2rem;
+        font-size: 0.75rem;
+        min-width: 550px; /* ضمان عرض كامل للتقويم */
+    }
+    
+    /* تحسين التمرير على الشاشات الصغيرة */
+    .hall-calendar::-webkit-scrollbar {
+        height: 5px;
+    }
+    
+    .hall-calendar thead th {
+        padding: 0.5rem 0.2rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+    
+    .hall-calendar tbody td {
+        height: 55px;
+        min-width: 40px;
+        padding: 0.2rem;
+        border-width: 2px;
+        border-radius: 8px;
+    }
+    
+    .hall-calendar .day-number {
+        font-size: 0.95rem;
+        top: 0.3rem;
+        font-weight: 800;
+    }
+    
+    .hall-calendar td.available .day-number,
+    .hall-calendar td.booked .day-number,
+    .hall-calendar td.partially-booked .day-number {
+        font-size: 1rem;
+    }
+    
+    .hall-calendar .booked-label,
+    .hall-calendar .available-label,
+    .hall-calendar .partially-booked-label {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+        bottom: 0.3rem;
+        border-radius: 4px;
+    }
+    
+    .hall-calendar tbody td.today {
+        border-width: 3px;
+    }
+    
+    .hall-calendar tbody td.today .day-number {
+        font-size: 1.1rem;
+        top: 0.25rem;
+    }
+}
+
+/* تحسينات إضافية للشاشات الصغيرة جداً */
+@media (max-width: 360px) {
+    .hall-calendar {
+        padding: 0.4rem;
+    }
+    
+    .hall-calendar .calendar-header {
+        padding: 0.5rem;
+    }
+    
+    .hall-calendar .calendar-header h4 {
+        font-size: 0.8rem;
+    }
+    
+    .hall-calendar table {
+        border-spacing: 0.15rem;
+    }
+    
+    .hall-calendar thead th {
+        padding: 0.4rem 0.15rem;
+        font-size: 0.6rem;
+    }
+    
+    .hall-calendar tbody td {
+        height: 50px;
+        min-width: 35px;
+    }
+    
+    .hall-calendar .day-number {
+        font-size: 0.85rem;
+        top: 0.25rem;
+    }
+    
+    .hall-calendar td.available .day-number,
+    .hall-calendar td.booked .day-number,
+    .hall-calendar td.partially-booked .day-number {
+        font-size: 0.95rem;
+    }
+    
+    .hall-calendar .booked-label,
+    .hall-calendar .available-label,
+    .hall-calendar .partially-booked-label {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.3rem;
+        bottom: 0.25rem;
+    }
+}
+
+/* ===== تحسينات RTL ===== */
+html[dir="rtl"] .form-check {
+    padding-right: 1.5rem;
+    padding-left: 0;
+}
+
+html[dir="rtl"] .form-check-input {
+    margin-right: -1.5rem;
+    margin-left: 0;
+}
+
+/* ===== إزالة الأنماط المكررة ===== */
+.text-truncate-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* ===== تحسينات إدارة الموظفين ===== */
+.user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-group-text {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--gold);
+    min-width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-group .form-control:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.15);
+}
+
+.btn-group .btn {
+    margin: 0 0.25rem;
+}
+
+.btn-group .btn:first-child {
+    margin-right: 0;
+}
+
+.btn-group .btn:last-child {
+    margin-left: 0;
+}

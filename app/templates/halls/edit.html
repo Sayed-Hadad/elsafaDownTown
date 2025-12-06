@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل القاعة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-edit"></i> تعديل القاعة
+        </h1>
+        
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="hall_name" class="form-label">اسم القاعة *</label>
+                        <input type="text" class="form-control" id="hall_name" name="hall_name" value="{{ hall.hall_name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">الوصف</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ hall.description or '' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="capacity" class="form-label">السعة (عدد الأشخاص) *</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" min="1" value="{{ hall.capacity }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">السعر (بج.م) *</label>
+                            <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" value="{{ hall.price }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="working_from" class="form-label">وقت البداية *</label>
+                            <input type="time" class="form-control" id="working_from" name="working_from" value="{{ hall.working_from }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="working_to" class="form-label">وقت النهاية *</label>
+                            <input type="time" class="form-control" id="working_to" name="working_to" value="{{ hall.working_to }}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">الحالة *</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="active" {% if hall.status == 'active' %}selected{% endif %}>نشطة</option>
+                            <option value="disabled" {% if hall.status == 'disabled' %}selected{% endif %}>معطلة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save"></i> حفظ التغييرات
+                        </button>
+                        <a href="{{ url_for('halls.manage_halls') }}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-arrow-left"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

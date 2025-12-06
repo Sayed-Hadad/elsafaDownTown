@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}إضافة حجز جديد{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-calendar-plus"></i> حجز جديد
+        </h1>
+        
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">تفاصيل الحجز</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="bookingForm">
+                    <!-- Hall Selection -->
+                    <div class="mb-3">
+                        <label for="hall_id" class="form-label">اختر القاعة *</label>
+                        <select class="form-control" id="hall_id" name="hall_id" required onchange="updateHallInfo()">
+                            <option value="">-- اختر قاعة --</option>
+                            {% for hall in halls %}
+                            <option value="{{ hall.id }}" data-price="{{ hall.price }}" data-from="{{ hall.working_from }}" data-to="{{ hall.working_to }}">
+                                {{ hall.hall_name }} - {{ hall.capacity }} شخص - {{ hall.price }} ج.م
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Hall Info Display -->
+                    <div id="hallInfo" class="alert alert-info" style="display:none;">
+                        <p class="mb-1"><strong>السعر:</strong> <span id="hallPrice">0</span> ج.م</p>
+                        <p class="mb-0"><strong>أوقات التشغيل:</strong> <span id="hallHours">--</span></p>
+                    </div>
+                    
+                    <!-- Customer Info -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_name" class="form-label">اسم العميل *</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">رقم الموبايل *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_alt" class="form-label">رقم الموبايل البديل</label>
+                            <input type="tel" class="form-control" id="phone_alt" name="phone_alt">
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                    
+                    <!-- Date Selection (full-day booking) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">التاريخ *</label>
+                            <div class="d-flex">
+                                <input type="date" class="form-control" id="date" name="date" required onchange="checkHallDayAvailability()">
+                                <button type="button" class="btn btn-outline-secondary ms-2" id="openCalendarBtn" onclick="openCalendar()">اختر من التقويم</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">وقت الحجز</label>
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="fas fa-clock"></i> الحجز يغطي اليوم بالكامل حسب أوقات عمل القاعة.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability Info -->
+                    <div id="availabilityInfo" class="alert alert-warning" style="display:none;">
+                        <strong>تنبيه:</strong> <span id="conflictMessage"></span>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="deposit" class="form-label">العربون (عربون)</label>
+                            <input type="number" class="form-control" id="deposit" name="deposit" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="total_price" class="form-label">إجمالي السعر *</label>
+                            <input type="number" class="form-control" id="total_price" name="total_price" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">ملاحظات</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="أي ملاحظات أو متطلبات خاصة..."></textarea>
+                    </div>
+                    
+                    <!-- Add-ons for selected hall -->
+                    <div id="addonsArea" class="mb-3" style="display:none;">
+                        <label class="form-label">الإضافات المتاحة للقاعة</label>
+                        <div id="addonsList"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> حفظ الحجز
+                        </button>
+                        <a href="{{ url_for('bookings.list_bookings') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Modal -->
+<div class="modal fade" id="calendarModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">اختر التاريخ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="calendarContainer">
+                <!-- Calendar will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booked ranges modal -->
+<div class="modal fade" id="bookedRangesModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">الأوقات المحجوزة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="bookedRangesSummary" class="mb-2 text-danger fw-bold" style="display:none;"></div>
+                <ul id="bookedRangesList" class="list-group"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">حسناً</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Global list of available add-ons (from DB)
+const globalAddons = {{ available_addons|tojson }};
+
+function updateHallInfo() {
+    const select = document.getElementById('hall_id');
+    const selected = select.options[select.selectedIndex];
+    const addonsArea = document.getElementById('addonsArea');
+    const addonsList = document.getElementById('addonsList');
+
+    if (selected.value) {
+        const price = selected.dataset.price;
+        const from = selected.dataset.from;
+        const to = selected.dataset.to;
+        
+        document.getElementById('hallPrice').textContent = price;
+        document.getElementById('hallHours').textContent = from + ' - ' + to;
+        document.getElementById('hallInfo').style.display = 'block';
+        
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').setAttribute('min', today);
+
+        // Populate global addons
+        addonsList.innerHTML = '';
+        if (globalAddons.length > 0) {
+            addonsArea.style.display = 'block';
+            globalAddons.forEach(function(addon, i){
+                const row = document.createElement('div');
+                row.className = 'form-check mb-3 p-2 d-flex align-items-center rounded';
+                row.style.background = 'var(--bg-card)';
+
+                const chk = document.createElement('input');
+                chk.type = 'checkbox';
+                chk.name = 'addon_selected[]';
+                chk.value = addon.id;
+                chk.id = `addon_${addon.id}`;
+                chk.className = 'form-check-input me-3';
+
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'flex-grow-1';
+                const labelTitle = document.createElement('label');
+                labelTitle.htmlFor = `addon_${addon.id}`;
+                const iconHtml = addon.icon ? `<i class="${addon.icon} text-primary me-1"></i>` : '';
+                labelTitle.innerHTML = `${iconHtml}<strong>${addon.name}</strong> <span class="text-muted">(${addon.desc})</span>`;
+                labelDiv.appendChild(labelTitle);
+
+                // Price input (editable)
+                const priceInput = document.createElement('input');
+                priceInput.type = 'number';
+                priceInput.step = '0.01';
+                priceInput.name = `addon_price_${addon.id}`;
+                priceInput.value = addon.price;
+                priceInput.placeholder = 'السعر (ج.م)';
+                priceInput.className = 'form-control form-control-sm ms-2';
+                priceInput.style.maxWidth = '120px';
+                priceInput.title = 'يمكن تعديل السعر';
+
+                const noteInput = document.createElement('input');
+                noteInput.type = 'text';
+                noteInput.name = `addon_note_${addon.id}`;
+                noteInput.placeholder = 'ملاحظة إضافية (اختياري)';
+                noteInput.className = 'form-control form-control-sm ms-2';
+                noteInput.style.maxWidth = '220px';
+
+                row.appendChild(chk);
+                row.appendChild(labelDiv);
+                row.appendChild(priceInput);
+                row.appendChild(noteInput);
+
+                addonsList.appendChild(row);
+            });
+        } else {
+            addonsArea.style.display = 'none';
+        }
+
+        // If date already selected, recheck availability for full-day booking
+        if (document.getElementById('date').value) {
+            checkHallDayAvailability();
+        }
+    } else {
+        document.getElementById('hallInfo').style.display = 'none';
+        addonsArea.style.display = 'none';
+    }
+}
+
+function checkHallDayAvailability() {
+    const hallId = document.getElementById('hall_id').value;
+    const date = document.getElementById('date').value;
+    
+    if (!hallId || !date) return;
+    
+    fetch(`/api/availability?hall_id=${hallId}&date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            // Show booked ranges popup if needed
+            showBookedModal(data.booked_ranges || [], data.full_day_booked, data.hall_name);
+
+            // Show inline alert when fully booked
+            if (data.full_day_booked) {
+                document.getElementById('conflictMessage').textContent = 'اليوم محجوز بالكامل لهذه القاعة. الرجاء اختيار تاريخ آخر.';
+                document.getElementById('availabilityInfo').style.display = 'block';
+            } else {
+                document.getElementById('availabilityInfo').style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('availabilityInfo').innerHTML = '<strong>خطأ:</strong> تعذر تحميل أوقات التوفر';
+            document.getElementById('availabilityInfo').style.display = 'block';
+        });
+}
+
+function showBookedModal(bookedRanges, isFullDay, hallName) {
+    const list = document.getElementById('bookedRangesList');
+    const summary = document.getElementById('bookedRangesSummary');
+    list.innerHTML = '';
+
+    if (isFullDay) {
+        summary.style.display = 'block';
+        summary.textContent = `${hallName || 'القاعة'} محجوزة بالكامل لهذا اليوم.`;
+    } else {
+        summary.style.display = 'none';
+    }
+
+    if (!bookedRanges.length && !isFullDay) return;
+
+    bookedRanges.forEach(b => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `<span><i class="fas fa-clock text-danger me-2"></i>${b.start_time} - ${b.end_time}</span><small class="text-muted">${b.customer_name || ''}</small>`;
+        list.appendChild(li);
+    });
+
+    const modal = new bootstrap.Modal(document.getElementById('bookedRangesModal'));
+    modal.show();
+}
+
+// Open calendar modal and load calendar for selected hall
+function openCalendar() {
+    const hallId = document.getElementById('hall_id').value;
+    if (!hallId) {
+        alert('الرجاء اختيار القاعة أولا');
+        return;
+    }
+    const container = document.getElementById('calendarContainer');
+    container.innerHTML = '<div class="text-center p-4">جاري تحميل التقويم...</div>';
+    fetch(`/halls/${hallId}/calendar`)
+        .then(r => r.text())
+        .then(html => {
+            container.innerHTML = html;
+            const modal = new bootstrap.Modal(document.getElementById('calendarModal'));
+            modal.show();
+
+            // Delegate click on calendar days
+            container.addEventListener('click', function onCalClick(e){
+                const td = e.target.closest('.calendar-day');
+                if (!td) return;
+                if (td.classList.contains('booked')) return;
+                const date = td.getAttribute('data-date');
+                if (date) {
+                    document.getElementById('date').value = date;
+                    checkHallDayAvailability();
+                    modal.hide();
+                    // remove listener after selection
+                    container.removeEventListener('click', onCalClick);
+                }
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('calendarContainer').innerHTML = '<div class="text-danger p-3">تعذر تحميل التقويم</div>';
+        });
+}
+
+// Form submit validation
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    const hallId = document.getElementById('hall_id').value;
+    const date = document.getElementById('date').value;
+    
+    if (!hallId || !date) {
+        e.preventDefault();
+        alert('الرجاء ملء جميع الحقول المطلوبة');
+    }
+});
+
+// Prefill if server provided selected_hall or prefill_date
+{% if selected_hall %}
+    document.getElementById('hall_id').value = '{{ selected_hall.id }}';
+    updateHallInfo();
+{% endif %}
+{% if prefill_date %}
+    document.getElementById('date').value = '{{ prefill_date }}';
+    checkHallDayAvailability();
+{% endif %}
+</script>
+{% endblock %}

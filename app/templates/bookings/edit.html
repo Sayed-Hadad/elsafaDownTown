@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}تعديل الحجز{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h1 class="h3 mb-4">
+            <i class="fas fa-edit"></i> تعديل الحجز
+        </h1>
+        
+        <div class="card">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">تفاصيل الحجز</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Hall Selection -->
+                    <div class="mb-3">
+                        <label for="hall_id" class="form-label">القاعة *</label>
+                        <select class="form-control" id="hall_id" name="hall_id" disabled>
+                            {% for hall in halls %}
+                            <option value="{{ hall.id }}" {% if hall.id == booking.hall_id %}selected{% endif %}>
+                                {{ hall.hall_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Customer Info -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_name" class="form-label">اسم العميل *</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" value="{{ booking.customer_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">رقم الموبايل *</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ booking.phone }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_alt" class="form-label">رقم الموبايل البديل</label>
+                            <input type="tel" class="form-control" id="phone_alt" name="phone_alt" value="{{ booking.phone_alt or '' }}">
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                    
+                    <!-- Date (full day) -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">التاريخ *</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ booking.date.strftime('%Y-%m-%d') }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">وقت الحجز</label>
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="fas fa-clock"></i> الحجز يغطي اليوم بالكامل حسب أوقات عمل القاعة.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pricing -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="deposit" class="form-label">العربون</label>
+                            <input type="number" class="form-control" id="deposit" name="deposit" min="0" step="0.01" value="{{ booking.deposit }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="total_price" class="form-label">إجمالي السعر *</label>
+                            <input type="number" class="form-control" id="total_price" name="total_price" min="0" step="0.01" value="{{ booking.total_price }}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Status -->
+                    <div class="mb-3">
+                        <label for="status" class="form-label">الحالة *</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>قيد الانتظار</option>
+                            <option value="approved" {% if booking.status == 'approved' %}selected{% endif %}>موافق عليه</option>
+                            <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>مكتمل</option>
+                            <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>ملغى</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">ملاحظات</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ booking.notes or '' }}</textarea>
+                    </div>
+
+                    <!-- Add-ons -->
+                    <div class="mb-3">
+                        <label class="form-label">الإضافات</label>
+                        <div id="editAddonsList" class="d-flex flex-column gap-2"></div>
+                        <small class="text-muted">اختر الإضافات وحدد السعر والملاحظات لكل إضافة.</small>
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-save"></i> حفظ التغييرات
+                        </button>
+                        <a href="{{ url_for('bookings.list_bookings') }}" class="btn btn-secondary flex-grow-1">
+                            <i class="fas fa-arrow-left"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const globalAddons = {{ available_addons|tojson }} || [];
+const selectedAddons = {{ booking.addons or [] | tojson }} || [];
+
+console.log('Global Addons:', globalAddons);
+console.log('Selected Addons:', selectedAddons);
+
+function renderEditAddons() {
+    const container = document.getElementById('editAddonsList');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!globalAddons || globalAddons.length === 0) {
+        container.innerHTML = '<p class="text-muted">لا توجد إضافات متاحة</p>';
+        return;
+    }
+    globalAddons.forEach(addon => {
+        const row = document.createElement('div');
+        row.className = 'form-check p-2 d-flex align-items-center rounded';
+        row.style.background = 'var(--bg-card)';
+
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.name = 'addon_selected';
+        chk.value = addon.id;
+        chk.id = `addon_${addon.id}`;
+        chk.className = 'form-check-input me-3';
+
+        const matched = selectedAddons.find(a => parseInt(a.id) === parseInt(addon.id));
+        if (matched) {
+            chk.checked = true;
+        }
+
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'flex-grow-1';
+        const labelTitle = document.createElement('label');
+        labelTitle.htmlFor = `addon_${addon.id}`;
+        const iconHtml = addon.icon ? `<i class="${addon.icon} text-primary me-1"></i>` : '';
+        labelTitle.innerHTML = `${iconHtml}<strong>${addon.name}</strong> <span class="text-muted">(${addon.desc})</span>`;
+        labelDiv.appendChild(labelTitle);
+
+        const priceInput = document.createElement('input');
+        priceInput.type = 'number';
+        priceInput.step = '0.01';
+        priceInput.min = '0';
+        priceInput.name = `addon_price_${addon.id}`;
+        priceInput.value = matched ? matched.price : addon.price;
+        priceInput.className = 'form-control form-control-sm ms-2';
+        priceInput.style.maxWidth = '120px';
+
+        const noteInput = document.createElement('input');
+        noteInput.type = 'text';
+        noteInput.name = `addon_note_${addon.id}`;
+        noteInput.value = matched ? (matched.note || '') : '';
+        noteInput.placeholder = 'ملاحظة (اختياري)';
+        noteInput.className = 'form-control form-control-sm ms-2';
+        noteInput.style.maxWidth = '220px';
+
+        row.appendChild(chk);
+        row.appendChild(labelDiv);
+        row.appendChild(priceInput);
+        row.appendChild(noteInput);
+        container.appendChild(row);
+    });
+}
+
+renderEditAddons();
+</script>
+{% endblock %}

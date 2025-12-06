@@ -1,0 +1,50 @@
+{# الأنماط موجودة في style.css الرئيسي #}
+
+<div class="hall-calendar" data-hall-id="{{ hall.id }}" data-year="{{ year }}" data-month="{{ month }}">
+    <div class="calendar-header">
+        <button type="button" class="btn btn-primary" onclick="navigateCalendar(this, -1)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <h4>{{ '%s سنة %d' % (month_name, year) }} &nbsp; • &nbsp; {{ hall.hall_name }}</h4>
+        <button type="button" class="btn btn-primary" onclick="navigateCalendar(this, 1)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="table-responsive">
+    <table class="table table-bordered text-center">
+        <thead>
+            <tr>
+                <th>الأحد</th>
+                <th>السبت</th>
+                <th>الجمعة</th>
+                <th>الخميس</th>
+                <th>الأربعاء</th>
+                <th>الثلاثاء</th>
+                <th>الاثنين</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in weeks %}
+            <tr>
+                {% for day in week %}
+                {% if day.day == 0 %}
+                <td class="bg-light"></td>
+                {% else %}
+                <td class="calendar-day {% if day.is_booked %}booked{% else %}available{% endif %}" data-date="{{ day.date.strftime('%Y-%m-%d') }}" {% if not day.is_booked %}style="cursor: pointer;"{% endif %}>
+                    <div class="day-number">{{ day.day }}</div>
+                    {% if day.is_booked %}
+                        <div class="booked-label">محجوز</div>
+                    {% else %}
+                        <div class="available-label">متاح</div>
+                    {% endif %}
+                </td>
+                {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+{# الدالة navigateCalendar موجودة في main.js #}

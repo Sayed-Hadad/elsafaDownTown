@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}إدارة الإضافات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .addon-card {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    .addon-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-left-color: var(--gold);
+    }
+    .addon-card.active {
+        border-left-color: var(--success);
+    }
+    .addon-card.inactive {
+        border-left-color: var(--danger);
+        opacity: 0.7;
+    }
+    .addon-icon {
+        font-size: 2rem;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+    }
+    .addon-edit-form {
+        display: none;
+    }
+    .addon-edit-form.show {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h1 class="h3 mb-1">
+                    <i class="fas fa-plus-square text-primary"></i> إدارة الإضافات
+                </h1>
+                <p class="text-muted mb-0">إدارة الخدمات الإضافية المتاحة للحجوزات</p>
+            </div>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0"><i class="fas fa-plus-circle"></i> إضافة إضافة جديدة</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.addons') }}" id="addAddonForm">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-code text-primary"></i> الكود (لاتيني فريد) *
+                        </label>
+                        <input type="text" name="code" class="form-control" required placeholder="مثل: fire, laser, led">
+                        <small class="text-muted">يستخدم لتحديد الإضافة في النظام</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-tag text-primary"></i> الاسم *
+                        </label>
+                        <input type="text" name="name" class="form-control" required placeholder="العرض الناري">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-align-right text-primary"></i> الوصف
+                        </label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="تفاصيل مختصرة عن الإضافة"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-image text-primary"></i> الأيقونة (Font Awesome)
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-icons"></i></span>
+                            <input type="text" name="icon" class="form-control" placeholder="fa-solid fa-rocket" id="iconPreview">
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle"></i> أمثلة: fa-solid fa-rocket, fa-solid fa-bolt, fa-solid fa-tv
+                        </small>
+                        <div id="iconPreviewDisplay" class="mt-2 text-center" style="font-size: 2rem; min-height: 50px; display: flex; align-items: center; justify-content: center;">
+                            <span class="text-muted"><i class="fas fa-image"></i></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-money-bill-wave text-primary"></i> السعر الافتراضي (ج.م) *
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">ج.م</span>
+                            <input type="number" name="price" step="0.01" min="0" class="form-control" required value="0" placeholder="0.00">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save"></i> حفظ الإضافة
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i> قائمة الإضافات
+                </h5>
+                <span class="badge" style="background: rgba(255, 255, 255, 0.2); color: #fff;">
+                    {{ addons|length }} إضافة
+                </span>
+            </div>
+            <div class="card-body p-0">
+                {% if addons %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"></th>
+                                <th>الإضافة</th>
+                                <th>الكود</th>
+                                <th>السعر</th>
+                                <th>الحالة</th>
+                                <th style="width: 150px;">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for addon in addons %}
+                            <tr id="addon-row-{{ addon.id }}" class="{% if not addon.active %}table-secondary{% endif %}">
+                                <td class="text-center">
+                                    {% if addon.icon %}
+                                    <i class="{{ addon.icon }} addon-icon" style="font-size: 1.5rem; color: var(--gold);"></i>
+                                    {% else %}
+                                    <i class="fas fa-box addon-icon" style="font-size: 1.5rem; color: var(--text-muted);"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ addon.name }}</strong>
+                                    {% if addon.description %}
+                                    <br><small class="text-muted">{{ addon.description }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <code class="text-primary">{{ addon.code }}</code>
+                                </td>
+                                <td>
+                                    <strong class="text-success">{{ addon.price }} ج.م</strong>
+                                </td>
+                                <td>
+                                    {% if addon.active %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle"></i> مفعل
+                                    </span>
+                                    {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times-circle"></i> معطل
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="toggleEditForm({{ addon.id }})" title="تعديل">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="edit-form-{{ addon.id }}" class="addon-edit-form">
+                                <td colspan="6" class="bg-dark">
+                                    <form method="POST" action="{{ url_for('admin.update_addon', addon_id=addon.id) }}" class="p-3">
+                                        <input type="hidden" name="_method" value="PATCH">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">الاسم *</label>
+                                                <input type="text" class="form-control form-control-sm" name="name" value="{{ addon.name }}" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">الكود</label>
+                                                <input type="text" class="form-control form-control-sm" value="{{ addon.code }}" disabled>
+                                                <small class="text-muted">لا يمكن تغيير الكود</small>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <label class="form-label">الوصف</label>
+                                                <textarea class="form-control form-control-sm" name="description" rows="2" placeholder="الوصف">{{ addon.description or '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">الأيقونة</label>
+                                                <input type="text" class="form-control form-control-sm" name="icon" value="{{ addon.icon or '' }}" placeholder="fa-solid fa-rocket">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">السعر (ج.م) *</label>
+                                                <input type="number" class="form-control form-control-sm" name="price" step="0.01" min="0" value="{{ addon.price }}" required>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox" name="active" id="active-{{ addon.id }}" {% if addon.active %}checked{% endif %}>
+                                                        <label class="form-check-label" for="active-{{ addon.id }}">مفعل</label>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-sm btn-secondary" onclick="toggleEditForm({{ addon.id }})">
+                                                            <i class="fas fa-times"></i> إلغاء
+                                                        </button>
+                                                        <button type="submit" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-save"></i> حفظ
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox" style="font-size: 4rem; color: var(--text-muted); opacity: 0.3;"></i>
+                    <p class="text-muted mt-3 mb-0">لا توجد إضافات بعد</p>
+                    <p class="text-muted small">استخدم النموذج على اليسار لإضافة إضافة جديدة</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // معاينة الأيقونة عند الكتابة
+    document.getElementById('iconPreview')?.addEventListener('input', function(e) {
+        const iconClass = e.target.value.trim();
+        const preview = document.getElementById('iconPreviewDisplay');
+        if (iconClass) {
+            preview.innerHTML = `<i class="${iconClass}" style="color: var(--gold);"></i>`;
+        } else {
+            preview.innerHTML = '<span class="text-muted"><i class="fas fa-image"></i></span>';
+        }
+    });
+
+    // تبديل عرض نموذج التعديل
+    function toggleEditForm(addonId) {
+        const formRow = document.getElementById('edit-form-' + addonId);
+        if (formRow) {
+            formRow.classList.toggle('show');
+        }
+    }
+
+    // إعادة تعيين النموذج بعد الإرسال الناجح
+    document.getElementById('addAddonForm')?.addEventListener('submit', function() {
+        setTimeout(() => {
+            this.reset();
+            document.getElementById('iconPreviewDisplay').innerHTML = '<span class="text-muted"><i class="fas fa-image"></i></span>';
+        }, 100);
+    });
+</script>
+{% endblock %}
