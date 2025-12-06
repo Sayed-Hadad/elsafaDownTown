@@ -1,0 +1,74 @@
+===========================================
+ENVIRONMENT VARIABLES FOR DEPLOYMENT
+===========================================
+
+REQUIRED VARIABLES:
+-------------------
+
+1. SECRET_KEY
+   Value: [Generate a random secret key - see instructions below]
+   Required: YES
+   Example: Use Python: python -c "import secrets; print(secrets.token_hex(32))"
+
+2. DATABASE_URL
+   Value: [Your PostgreSQL connection string]
+   Required: YES (for production)
+   Format: postgresql://username:password@host:port/database
+   Note: Most platforms provide this automatically when you connect a database
+
+OPTIONAL (BUT RECOMMENDED):
+---------------------------
+
+3. FLASK_ENV
+   Value: production
+   Required: NO (but recommended)
+
+4. SESSION_COOKIE_SECURE
+   Value: true
+   Required: NO (set to true if using HTTPS)
+
+5. SESSION_COOKIE_HTTPONLY
+   Value: true
+   Required: NO (security best practice)
+
+6. SESSION_COOKIE_SAMESITE
+   Value: Lax
+   Required: NO
+
+===========================================
+QUICK SETUP FOR RENDER.COM:
+===========================================
+
+If using render.yaml, these are auto-configured.
+For manual setup, add:
+
+SECRET_KEY = [Click "Generate" or use Python command above]
+DATABASE_URL = [Auto-linked from PostgreSQL database]
+FLASK_ENV = production
+
+===========================================
+QUICK SETUP FOR OTHER PLATFORMS:
+===========================================
+
+Add these environment variables:
+
+NAME: SECRET_KEY
+VALUE: [Generate using: python -c "import secrets; print(secrets.token_hex(32))"]
+
+NAME: DATABASE_URL  
+VALUE: [Your PostgreSQL connection string]
+
+NAME: FLASK_ENV
+VALUE: production
+
+===========================================
+GENERATE SECRET KEY:
+===========================================
+
+Run this command to generate a secure secret key:
+python -c "import secrets; print(secrets.token_hex(32))"
+
+Copy the output and use it as your SECRET_KEY value.
+
+===========================================
+
